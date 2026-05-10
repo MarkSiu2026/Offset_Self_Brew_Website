@@ -37,13 +37,15 @@
     background: rgba(250,248,244,0.92);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
     align-items: center;
-    justify-content: space-between;
     padding: 0 60px;
     height: 68px;
     border-bottom: 1px solid var(--border);
   }
+
+  .nav-right { justify-self: end; }
 
   .nav-logo {
     font-family: 'Courier New', Courier, monospace;
@@ -1106,13 +1108,17 @@
     background: none;
     border: none;
     cursor: pointer;
-    font-size: 1.15rem;
     color: var(--ink);
     padding: 4px 6px;
     line-height: 1;
-    transition: color 0.2s;
+    transition: opacity 0.2s;
+    display: flex;
+    align-items: center;
   }
-  .theme-toggle:hover { color: var(--ink); }
+  .theme-toggle:hover { opacity: 0.6; }
+
+  .kettle-icon path { stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+  .kettle-fill { fill: none; }
 
   /* ── DARK MODE ── */
   /* Triggered by OS preference (unless user overrode to light) */
@@ -1136,6 +1142,8 @@
     :root:not([data-theme="light"]) .p-card.dark .p-period     { color: rgba(255,255,255,0.65); }
     :root:not([data-theme="light"]) .p-card.dark .p-name       { color: rgba(255,255,255,0.9); }
     :root:not([data-theme="light"]) .p-card.dark .p-features li{ color: rgba(255,255,255,0.85); }
+    :root:not([data-theme="light"]) .kettle-fill { fill: currentColor; stroke: none; }
+    :root:not([data-theme="light"]) .fold-line { opacity: 0; }
   }
 
   /* Triggered by manual toggle */
@@ -1159,6 +1167,8 @@
   :root[data-theme="dark"] .p-card.dark .p-period     { color: rgba(255,255,255,0.65); }
   :root[data-theme="dark"] .p-card.dark .p-name       { color: rgba(255,255,255,0.9); }
   :root[data-theme="dark"] .p-card.dark .p-features li{ color: rgba(255,255,255,0.85); }
+  :root[data-theme="dark"] .kettle-fill { fill: currentColor; stroke: none; }
+  :root[data-theme="dark"] .fold-line { opacity: 0; }
 </style>
 </head>
 <body>
@@ -1173,7 +1183,14 @@
     <li><a href="#booking">Book</a></li>
   </ul>
   <div class="nav-right" style="display:flex;align-items:center;gap:20px;">
-    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">☽</button>
+    <button class="theme-toggle" id="theme-toggle" aria-label="Switch to dark mode">
+      <svg class="kettle-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M8 5C7.5 4 8.5 3 8 2"/>
+        <path d="M13 5C12.5 4 13.5 3 13 2"/>
+        <path class="kettle-fill" d="M3 7h14v13H3z"/>
+        <path d="M17 10C22 10 22 17 17 17"/>
+      </svg>
+    </button>
   </div>
 </nav>
 <div class="mobile-subnav">
@@ -1237,7 +1254,7 @@
   <div class="how-header reveal">
     <div>
       <div class="section-label">The process</div>
-      <h2 class="how-title">Four steps to<br>your <em>perfect</em> cup</h2>
+      <h2 class="how-title">Four Step To Your <em>Perfect</em> Cup</h2>
     </div>
     <p class="how-subtitle">
       We keep the process simple. You focus on the coffee — 
@@ -1273,7 +1290,7 @@
   <div class="equip-intro reveal">
     <div>
       <div class="section-label">The arsenal</div>
-      <h2 class="equip-title">Pro gear,<br><em>all</em> included</h2>
+      <h2 class="equip-title">Pro Gear <em>All</em> Included</h2>
     </div>
     <p class="equip-desc">
       Every piece of equipment is curated for precision and longevity. 
@@ -1289,7 +1306,7 @@
       <div class="ei-title">Burr Grinders</div>
       <p class="ei-desc">Barista-assisted. Dialled to your brew method and dose. Precision over everything.</p>
       <div class="ei-options">
-        <span>EK43</span><span>Comandante</span><span>1Zpresso</span><span>DF64</span>
+        <span>EK43</span>
       </div>
     </div>
     <div class="equip-item reveal">
@@ -1298,7 +1315,7 @@
       <div class="ei-title">Filter Drippers</div>
       <p class="ei-desc">From the clean clarity of the V60 to the complexity of the Orea. All filter papers included.</p>
       <div class="ei-options">
-        <span>V60</span><span>Orea V3</span><span>Origami</span><span>Kalita</span><span>Chemex</span>
+        <span>V60</span><span>Orea</span><span>Origami</span>
       </div>
     </div>
     <div class="equip-item reveal">
@@ -1307,7 +1324,7 @@
       <div class="ei-title">Gooseneck Kettles</div>
       <p class="ei-desc">Temperature-controlled, precision pour spouts. Pre-heated and held at your target temperature.</p>
       <div class="ei-options">
-        <span>Fellow Stagg EKG</span><span>Brista Pro</span><span>Hario</span>
+        <span>Fellow Stagg EKG</span><span>Brista Pro</span>
       </div>
     </div>
     <div class="equip-item reveal">
@@ -1316,7 +1333,7 @@
       <div class="ei-title">Precision Scales</div>
       <p class="ei-desc">0.1g resolution with integrated timers. Every gram of coffee, every ml of water — tracked.</p>
       <div class="ei-options">
-        <span>Acaia Pearl</span><span>Timemore</span><span>Brewista</span>
+        <span>Acaia Pearl</span><span>Timemore</span><span>MHW-3Bomber</span>
       </div>
     </div>
     <div class="equip-item reveal">
@@ -1334,7 +1351,7 @@
       <div class="ei-title">Shop Beans</div>
       <p class="ei-desc">Our selection rotates seasonally — small-batch Australian roasters, naturally and washed processed.</p>
       <div class="ei-options">
-        <span>Single Origin</span><span>Seasonal</span><span>Natural / Washed</span>
+        <span>Single Origin</span><span>Seasonal</span><span>Ask　Us :D</span>
       </div>
     </div>
   </div>
@@ -1343,11 +1360,8 @@
 <!-- PRICING -->
 <section id="pricing">
   <div class="pricing-header reveal">
-    <div class="section-label" style="justify-content:center; margin-bottom:16px">
-      <span style="display:block; width:24px; height:1px; background:var(--gold)"></span>
-      Pricing
-    </div>
-    <h2 class="pricing-title">Simple, <em>honest</em> pricing</h2>
+    <div class="section-label">Pricing</div>
+    <h2 class="pricing-title">Simple <em>Honest</em> Pricing</h2>
     <p class="pricing-sub">One station, 15–20 minutes, everything you need. Choose your tier based on your beans.</p>
   </div>
 
@@ -1522,7 +1536,6 @@
 
     function applyTheme(dark) {
       root.setAttribute('data-theme', dark ? 'dark' : 'light');
-      btn.textContent = dark ? '☀' : '☽';
       btn.setAttribute('aria-label', dark ? 'Switch to light mode' : 'Switch to dark mode');
     }
 
