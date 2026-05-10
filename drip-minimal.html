@@ -1,0 +1,1298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Drip Lab — Self-Serve Filter Coffee</title>
+
+<style>
+  :root {
+    --cream: #f4f0e8;
+    --cream-dark: #ece7db;
+    --ink: #1a1714;
+    --ink-light: #6b6560;
+    --ink-faint: #b0ada8;
+    --gold: #9a7d
+    --gold-light: #c4a96e;
+    --white: #faf8f4;
+    --border: rgba(26,23,20,0.1);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; font-size: 16px; }
+
+  body {
+    background: var(--white);
+    color: var(--ink);
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: 400;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: rgba(250,248,244,0.92);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 60px;
+    height: 68px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-logo {
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: 700;
+    font-size: 1.1rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 40px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--ink); }
+
+  .nav-cta {
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink);
+    text-decoration: none;
+    border-bottom: 1px solid var(--ink);
+    padding-bottom: 1px;
+    transition: color 0.2s, border-color 0.2s;
+  }
+
+  .nav-cta:hover { color: var(--gold); border-color: var(--gold); }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding-top: 68px;
+  }
+
+  .hero-left {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 80px 64px 80px 60px;
+  }
+
+  .hero-eyebrow {
+    font-size: 0.7rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 32px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .hero-eyebrow::before {
+    content: '';
+    display: block;
+    width: 32px;
+    height: 1px;
+    background: var(--gold);
+  }
+
+  .hero-h1 {
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: 700;
+    font-size: clamp(2.8rem, 5vw, 4.8rem);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    margin-bottom: 36px;
+  }
+
+  .hero-h1 em {
+    font-style: italic;
+    color: var(--gold);
+  }
+
+  .hero-body {
+    font-size: 1rem;
+    line-height: 1.8;
+    color: var(--ink-light);
+    max-width: 400px;
+    margin-bottom: 52px;
+    font-weight: 300;
+  }
+
+  .hero-actions {
+    display: flex;
+    align-items: center;
+    gap: 36px;
+  }
+
+  .btn-dark {
+    display: inline-block;
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--white);
+    background: var(--ink);
+    padding: 16px 36px;
+    transition: background 0.25s;
+  }
+
+  .btn-dark:hover { background: var(--gold); }
+
+  .btn-text {
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: color 0.2s;
+  }
+
+  .btn-text::after {
+    content: '→';
+    font-size: 0.9rem;
+    transition: transform 0.2s;
+  }
+
+  .btn-text:hover { color: var(--ink); }
+  .btn-text:hover::after { transform: translateX(4px); }
+
+  .hero-right {
+    position: relative;
+    overflow: hidden;
+    background: var(--cream-dark);
+  }
+
+  .hero-right img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.85;
+    mix-blend-mode: multiply;
+  }
+
+  .hero-right-label {
+    position: absolute;
+    bottom: 40px;
+    right: 40px;
+    font-family: 'Courier New', Courier, monospace;
+    font-style: italic;
+    font-size: 0.85rem;
+    color: var(--ink-light);
+    letter-spacing: 0.08em;
+  }
+
+  /* ── MARQUEE STRIP ── */
+  .marquee-strip {
+    background: var(--ink);
+    padding: 14px 0;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  .marquee-track {
+    display: inline-flex;
+    gap: 0;
+    animation: marquee 28s linear infinite;
+  }
+
+  .marquee-item {
+    font-size: 0.68rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--cream);
+    padding: 0 40px;
+    opacity: 0.7;
+  }
+
+  .marquee-dot {
+    color: var(--gold-light);
+    opacity: 1 !important;
+    padding: 0 4px;
+  }
+
+  @keyframes marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  /* ── SECTION UTILS ── */
+  .section-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .section-label::before {
+    content: '';
+    display: block;
+    width: 24px;
+    height: 1px;
+    background: var(--gold);
+  }
+
+  /* ── HOW IT WORKS ── */
+  #how {
+    padding: 120px 60px;
+  }
+
+  .how-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 80px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 40px;
+  }
+
+  .how-title {
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: 700;
+    font-size: clamp(2rem, 3.5vw, 3.2rem);
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+  }
+
+  .how-title em { font-style: italic; color: var(--gold); }
+
+  .how-subtitle {
+    max-width: 320px;
+    font-size: 0.92rem;
+    line-height: 1.75;
+    color: var(--ink-light);
+    text-align: right;
+  }
+
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+  }
+
+  .step {
+    padding: 48px 40px 48px 0;
+    border-right: 1px solid var(--border);
+    padding-right: 40px;
+  }
+
+  .step:last-child { border-right: none; padding-right: 0; padding-left: 40px; }
+  .step:not(:first-child) { padding-left: 40px; }
+
+  .step-num {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 3.5rem;
+    font-weight: 300;
+    color: var(--cream-dark);
+    line-height: 1;
+    margin-bottom: 24px;
+    display: block;
+  }
+
+  .step h3 {
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: 400;
+    font-size: 1.25rem;
+    margin-bottom: 14px;
+    letter-spacing: 0.02em;
+  }
+
+  .step p {
+    font-size: 0.88rem;
+    line-height: 1.8;
+    color: var(--ink-light);
+  }
+
+  /* ── EQUIPMENT ── */
+  #equipment {
+    background: var(--cream);
+    padding: 120px 60px;
+  }
+
+  .equip-intro {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: end;
+    margin-bottom: 80px;
+  }
+
+  .equip-title {
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: 700;
+    font-size: clamp(2rem, 3.5vw, 3.2rem);
+    line-height: 1.15;
+  }
+
+  .equip-title em { font-style: italic; color: var(--gold); }
+
+  .equip-desc {
+    font-size: 0.92rem;
+    line-height: 1.85;
+    color: var(--ink-light);
+    padding-top: 16px;
+  }
+
+  .equip-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+  }
+
+  .equip-item {
+    background: var(--white);
+    padding: 40px 36px;
+    transition: background 0.25s;
+  }
+
+  .equip-item:hover { background: var(--ink); }
+  .equip-item:hover .ei-cat,
+  .equip-item:hover .ei-title,
+  .equip-item:hover .ei-desc { color: var(--cream); }
+  .equip-item:hover .ei-options span { border-color: rgba(255,255,255,0.2); color: rgba(255,255,255,0.55); }
+  .equip-item:hover .ei-num { color: rgba(255,255,255,0.08); }
+
+  .ei-num {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 4rem;
+    font-weight: 300;
+    color: var(--cream-dark);
+    line-height: 1;
+    margin-bottom: 24px;
+    transition: color 0.25s;
+  }
+
+  .ei-cat {
+    font-size: 0.65rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 10px;
+    transition: color 0.25s;
+  }
+
+  .ei-title {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 1.4rem;
+    font-weight: 400;
+    margin-bottom: 14px;
+    transition: color 0.25s;
+  }
+
+  .ei-desc {
+    font-size: 0.85rem;
+    line-height: 1.8;
+    color: var(--ink-light);
+    margin-bottom: 24px;
+    transition: color 0.25s;
+  }
+
+  .ei-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .ei-options span {
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    border: 1px solid var(--border);
+    color: var(--ink-faint);
+    padding: 4px 10px;
+    transition: border-color 0.25s, color 0.25s;
+  }
+
+  /* ── PRICING ── */
+  #pricing {
+    padding: 120px 60px;
+  }
+
+  .pricing-header {
+    text-align: center;
+    margin-bottom: 80px;
+  }
+
+  .pricing-title {
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: 700;
+    font-size: clamp(2rem, 3.5vw, 3.2rem);
+    line-height: 1.15;
+    margin-bottom: 20px;
+  }
+
+  .pricing-title em { font-style: italic; color: var(--gold); }
+
+  .pricing-sub {
+    font-size: 0.92rem;
+    color: var(--ink-light);
+    max-width: 440px;
+    margin: 0 auto;
+    line-height: 1.75;
+  }
+
+  .pricing-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .p-card {
+    background: var(--cream);
+    padding: 56px 52px;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.3s;
+  }
+
+  .p-card.dark {
+    background: var(--ink);
+  }
+
+  .p-card-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 32px;
+  }
+
+  .p-card.dark .p-card-label { color: rgba(255,255,255,0.35); }
+
+  .p-price {
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: 300;
+    line-height: 1;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .p-price .sym {
+    font-size: 1.5rem;
+    padding-top: 10px;
+    color: var(--ink-light);
+  }
+
+  .p-card.dark .p-price .sym { color: rgba(255,255,255,0.4); }
+
+  .p-price .num {
+    font-size: 5.5rem;
+    color: var(--ink);
+    letter-spacing: -0.03em;
+  }
+
+  .p-card.dark .p-price .num { color: var(--white); }
+
+  .p-period {
+    font-size: 0.78rem;
+    color: var(--ink-faint);
+    letter-spacing: 0.1em;
+    margin-bottom: 36px;
+  }
+
+  .p-card.dark .p-period { color: rgba(255,255,255,0.3); }
+
+  .p-name {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 28px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .p-card.dark .p-name { color: var(--white); }
+
+  .p-features {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 40px;
+  }
+
+  .p-features li {
+    display: flex;
+    gap: 14px;
+    font-size: 0.88rem;
+    line-height: 1.6;
+    color: var(--ink-light);
+  }
+
+  .p-card.dark .p-features li { color: rgba(255,255,255,0.55); }
+
+  .p-features li::before {
+    content: '—';
+    color: var(--gold-light);
+    flex-shrink: 0;
+  }
+
+  .p-cta {
+    display: inline-block;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    text-decoration: none;
+    padding: 14px 32px;
+    border: 1px solid var(--ink);
+    color: var(--ink);
+    transition: background 0.2s, color 0.2s;
+  }
+
+  .p-cta:hover { background: var(--ink); color: var(--white); }
+
+  .p-card.dark .p-cta {
+    border-color: rgba(255,255,255,0.25);
+    color: rgba(255,255,255,0.7);
+  }
+
+  .p-card.dark .p-cta:hover {
+    background: rgba(255,255,255,0.1);
+    color: var(--white);
+  }
+
+  .p-addon {
+    margin-top: 28px;
+    padding-top: 28px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .p-addon-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.3);
+    margin-bottom: 6px;
+  }
+
+  .p-addon-price {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 2rem;
+    font-weight: 300;
+    color: var(--gold-light);
+  }
+
+  /* ── GALLERY ── */
+  #gallery {
+    background: var(--cream);
+  }
+
+  .gallery-header {
+    padding: 80px 60px 48px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+  }
+
+  .gallery-title {
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: 700;
+    font-size: clamp(1.8rem, 3vw, 2.8rem);
+    line-height: 1.15;
+  }
+
+  .gallery-title em { font-style: italic; color: var(--gold); }
+
+  .gallery-link {
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: color 0.2s;
+    flex-shrink: 0;
+    margin-bottom: 4px;
+  }
+
+  .gallery-link::after { content: '→'; }
+  .gallery-link:hover { color: var(--ink); }
+
+  .gallery-mosaic {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr;
+    grid-template-rows: 320px 240px;
+    gap: 2px;
+    padding: 0 60px 80px;
+  }
+
+  .gm-item {
+    overflow: hidden;
+    position: relative;
+    background: var(--cream-dark);
+  }
+
+  .gm-item:first-child { grid-row: 1 / 3; }
+
+  .gm-item img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s ease, opacity 0.4s;
+    opacity: 0.88;
+  }
+
+  .gm-item:hover img { transform: scale(1.05); opacity: 1; }
+
+  .gm-caption {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    padding: 20px;
+    background: linear-gradient(transparent, rgba(26,23,20,0.5));
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(250,248,244,0.75);
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.3s, transform 0.3s;
+  }
+
+  .gm-item:hover .gm-caption { opacity: 1; transform: translateY(0); }
+
+  /* ── INFO ── */
+  #info {
+    padding: 120px 60px;
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 80px;
+    align-items: start;
+  }
+
+  .info-aside {
+    position: sticky;
+    top: 100px;
+  }
+
+  .info-aside-title {
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: 700;
+    font-size: 2.2rem;
+    line-height: 1.15;
+    margin-bottom: 24px;
+  }
+
+  .info-aside-title em { font-style: italic; color: var(--gold); }
+
+  .info-aside p {
+    font-size: 0.9rem;
+    line-height: 1.85;
+    color: var(--ink-light);
+  }
+
+  .info-blocks {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 56px;
+  }
+
+  .ib-title {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 1.2rem;
+    font-weight: 400;
+    margin-bottom: 20px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+    letter-spacing: 0.02em;
+  }
+
+  .ib-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
+  }
+
+  .ib-list li {
+    font-size: 0.86rem;
+    line-height: 1.7;
+    color: var(--ink-light);
+    padding-left: 16px;
+    position: relative;
+  }
+
+  .ib-list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 10px;
+    width: 5px;
+    height: 1px;
+    background: var(--gold-light);
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--ink);
+    padding: 60px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    align-items: center;
+  }
+
+  .footer-logo {
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: 700;
+    font-size: 1.1rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--cream);
+    text-decoration: none;
+  }
+
+  .footer-center {
+    text-align: center;
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.3);
+    line-height: 1.8;
+  }
+
+  .footer-links {
+    display: flex;
+    justify-content: flex-end;
+    gap: 28px;
+  }
+
+  .footer-links a {
+    font-size: 0.68rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.35);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .footer-links a:hover { color: var(--gold-light); }
+
+  /* ── FADE-IN ── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.75s ease, transform 0.75s ease;
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ── TABLET ── */
+  @media (max-width: 1024px) {
+    .steps { grid-template-columns: 1fr 1fr; }
+    .step:nth-child(2) { border-right: none; }
+    .step:nth-child(3) { border-right: 1px solid var(--border); border-top: 1px solid var(--border); }
+    .step:nth-child(4) { border-top: 1px solid var(--border); border-right: none; }
+    .equip-grid { grid-template-columns: 1fr 1fr; }
+    #info { gap: 48px; padding: 100px 40px; }
+  }
+
+  /* ── MOBILE ── */
+  @media (max-width: 768px) {
+
+    /* Nav — hamburger-style: hide links, show logo + CTA only */
+    nav {
+      padding: 0 20px;
+      height: 58px;
+    }
+    .nav-links { display: none; }
+    .nav-logo { font-size: 1.1rem; }
+    .nav-cta { font-size: 0.65rem; }
+
+    /* Hero — stacked, image on top */
+    .hero {
+      grid-template-columns: 1fr;
+      grid-template-rows: 52vw auto;
+      min-height: auto;
+      padding-top: 58px;
+    }
+    .hero-left { order: 2; padding: 44px 20px 60px; }
+    .hero-right { order: 1; height: 52vw; min-height: 200px; }
+    .hero-right-label { display: none; }
+    .hero-h1 { font-size: clamp(2.6rem, 10vw, 3.8rem); margin-bottom: 20px; }
+    .hero-body { font-size: 0.95rem; margin-bottom: 36px; max-width: 100%; }
+    .hero-actions { flex-direction: column; align-items: flex-start; gap: 20px; }
+    .btn-dark { width: 100%; text-align: center; padding: 16px 24px; }
+    .hero-eyebrow { margin-bottom: 20px; font-size: 0.65rem; }
+
+    /* Marquee — tighten spacing */
+    .marquee-item { padding: 0 20px; font-size: 0.6rem; }
+
+    /* How it works */
+    #how { padding: 64px 20px; }
+    .how-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 48px;
+      padding-bottom: 28px;
+    }
+    .how-subtitle { text-align: left; max-width: 100%; font-size: 0.88rem; }
+    .how-title { font-size: clamp(2rem, 8vw, 2.8rem); }
+    .steps { grid-template-columns: 1fr; gap: 0; }
+    .step {
+      padding: 32px 0;
+      border-right: none !important;
+      border-bottom: 1px solid var(--border);
+      border-top: none !important;
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+    }
+    .step:last-child { border-bottom: none; }
+    .step-num { font-size: 2.5rem; margin-bottom: 14px; }
+    .step h3 { font-size: 1.15rem; }
+
+    /* Equipment */
+    #equipment { padding: 64px 20px; }
+    .equip-intro { grid-template-columns: 1fr; gap: 20px; margin-bottom: 48px; }
+    .equip-title { font-size: clamp(2rem, 8vw, 2.8rem); }
+    .equip-grid { grid-template-columns: 1fr; gap: 2px; }
+    .equip-item { padding: 32px 24px; }
+    /* Always show hover state info on mobile (no hover) */
+    .equip-item { background: var(--white); }
+    .ei-num { font-size: 3rem; margin-bottom: 16px; }
+    .ei-title { font-size: 1.2rem; }
+
+    /* Pricing */
+    #pricing { padding: 64px 20px; }
+    .pricing-header { margin-bottom: 48px; }
+    .pricing-title { font-size: clamp(2rem, 8vw, 2.8rem); }
+    .pricing-cards { grid-template-columns: 1fr; gap: 2px; max-width: 100%; }
+    .p-card { padding: 40px 28px; }
+    .p-price .num { font-size: 5rem; }
+
+    /* Gallery */
+    #gallery { padding: 0; }
+    .gallery-header { padding: 64px 20px 32px; flex-direction: column; align-items: flex-start; gap: 12px; }
+    .gallery-title { font-size: clamp(1.8rem, 7vw, 2.6rem); }
+    .gallery-mosaic {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      padding: 0 0 60px;
+    }
+    .gm-item { height: 64vw; }
+    .gm-item:first-child { height: 80vw; }
+    /* Always show captions on mobile */
+    .gm-caption { opacity: 1; transform: translateY(0); }
+
+    /* Info */
+    #info {
+      grid-template-columns: 1fr;
+      gap: 40px;
+      padding: 64px 20px;
+    }
+    .info-aside { position: static; }
+    .info-aside-title { font-size: 2.2rem; }
+    .info-blocks { grid-template-columns: 1fr; gap: 36px; }
+
+    /* Footer */
+    footer {
+      grid-template-columns: 1fr;
+      gap: 20px;
+      text-align: center;
+      padding: 40px 20px;
+    }
+    .footer-links { justify-content: center; }
+    .footer-logo { font-size: 1.2rem; }
+
+    /* Section labels */
+    .section-label { font-size: 0.62rem; }
+  }
+
+  /* ── SMALL PHONES (375px and below) ── */
+  @media (max-width: 390px) {
+    .hero-h1 { font-size: 2.4rem; }
+    .p-card { padding: 32px 20px; }
+    .p-price .num { font-size: 4.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">Drip Lab</a>
+  <ul class="nav-links">
+    <li><a href="#how">How it works</a></li>
+    <li><a href="#equipment">Equipment</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#gallery">The space</a></li>
+  </ul>
+  <a href="#pricing" class="nav-cta">Book a session</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <div class="hero-eyebrow">Self-serve filter coffee</div>
+    <h1 class="hero-h1">
+      Brew it<br>
+      <em>your</em> way,<br>
+      here.
+    </h1>
+    <p class="hero-body">
+      A shared filter coffee corner with pro-grade equipment, 
+      barista-assisted grinding, and zero compromise. 
+      Bring your beans or choose ours.
+    </p>
+    <div class="hero-actions">
+      <a href="#pricing" class="btn-dark">Get started</a>
+      <a href="#equipment" class="btn-text">Explore the gear</a>
+    </div>
+  </div>
+  <div class="hero-right">
+    <img src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=900&q=85" alt="Pour over coffee brewing">
+    <span class="hero-right-label">The ritual, refined.</span>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-strip" aria-hidden="true">
+  <div class="marquee-track">
+    <span class="marquee-item">EK43 Grinder</span><span class="marquee-dot">·</span>
+    <span class="marquee-item">Fellow Stagg EKG</span><span class="marquee-dot">·</span>
+    <span class="marquee-item">Hario V60</span><span class="marquee-dot">·</span>
+    <span class="marquee-item">Orea V3</span><span class="marquee-dot">·</span>
+    <span class="marquee-item">Origami Dripper</span><span class="marquee-dot">·</span>
+    <span class="marquee-item">Acaia Pearl Scale</span><span class="marquee-dot">·</span>
+    <span class="marquee-item">Kalita Wave</span><span class="marquee-dot">·</span>
+    <span class="marquee-item">Comandante C40</span><span class="marquee-dot">·</span>
+    <span class="marquee-item">Brista Pro Kettle</span><span class="marquee-dot">·</span>
+    <span class="marquee-item">Timemore Scale</span><span class="marquee-dot">·</span>
+    <span class="marquee-item">Chemex Classic</span><span class="marquee-dot">·</span>
+    <span class="marquee-item">Single Origin Beans</span><span class="marquee-dot">·</span>
+    <!-- duplicate for seamless loop -->
+    <span class="marquee-item">EK43 Grinder</span><span class="marquee-dot">·</span>
+    <span class="marquee-item">Fellow Stagg EKG</span><span class="marquee-dot">·</span>
+    <span class="marquee-item">Hario V60</span><span class="marquee-dot">·</span>
+    <span class="marquee-item">Orea V3</span><span class="marquee-dot">·</span>
+    <span class="marquee-item">Origami Dripper</span><span class="marquee-dot">·</span>
+    <span class="marquee-item">Acaia Pearl Scale</span><span class="marquee-dot">·</span>
+    <span class="marquee-item">Kalita Wave</span><span class="marquee-dot">·</span>
+    <span class="marquee-item">Comandante C40</span><span class="marquee-dot">·</span>
+    <span class="marquee-item">Brista Pro Kettle</span><span class="marquee-dot">·</span>
+    <span class="marquee-item">Timemore Scale</span><span class="marquee-dot">·</span>
+    <span class="marquee-item">Chemex Classic</span><span class="marquee-dot">·</span>
+    <span class="marquee-item">Single Origin Beans</span><span class="marquee-dot">·</span>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<section id="how">
+  <div class="how-header reveal">
+    <div>
+      <div class="section-label">The process</div>
+      <h2 class="how-title">Four steps to<br>your <em>perfect</em> cup</h2>
+    </div>
+    <p class="how-subtitle">
+      We keep the process simple. You focus on the coffee — 
+      we handle everything else.
+    </p>
+  </div>
+  <div class="steps">
+    <div class="step reveal">
+      <span class="step-num">01</span>
+      <h3>Bring or buy beans</h3>
+      <p>Arrive with your own single origin, or select from our rotating roster of seasonal specialty beans sourced from the best Australian roasters.</p>
+    </div>
+    <div class="step reveal">
+      <span class="step-num">02</span>
+      <h3>Barista grinds</h3>
+      <p>Our barista dials in your grind on whichever burr grinder you choose. Tell us your brew method and dose — we'll set it precisely.</p>
+    </div>
+    <div class="step reveal">
+      <span class="step-num">03</span>
+      <h3>Set up & brew</h3>
+      <p>Take your station. Choose your dripper, load a filter paper, set the scale, heat the kettle to your exact temperature. Then pour.</p>
+    </div>
+    <div class="step reveal">
+      <span class="step-num">04</span>
+      <h3>Drink it</h3>
+      <p>Sit down and drink the best cup you've made. 15–20 minutes of focused, intentional brewing. Every time.</p>
+    </div>
+  </div>
+</section>
+
+<!-- EQUIPMENT -->
+<section id="equipment">
+  <div class="equip-intro reveal">
+    <div>
+      <div class="section-label">The arsenal</div>
+      <h2 class="equip-title">Pro gear,<br><em>all</em> included</h2>
+    </div>
+    <p class="equip-desc">
+      Every piece of equipment is curated for precision and longevity. 
+      No compromises in the grinder, the kettle, the scale, or the dripper. 
+      This is what professionals use — and now it's yours for a session.
+    </p>
+  </div>
+
+  <div class="equip-grid">
+    <div class="equip-item reveal">
+      <div class="ei-num">01</div>
+      <div class="ei-cat">Grinders</div>
+      <div class="ei-title">Burr Grinders</div>
+      <p class="ei-desc">Barista-assisted. Dialled to your brew method and dose. Precision over everything.</p>
+      <div class="ei-options">
+        <span>EK43</span><span>Comandante</span><span>1Zpresso</span><span>DF64</span>
+      </div>
+    </div>
+    <div class="equip-item reveal">
+      <div class="ei-num">02</div>
+      <div class="ei-cat">Drippers</div>
+      <div class="ei-title">Filter Drippers</div>
+      <p class="ei-desc">From the clean clarity of the V60 to the complexity of the Orea. All filter papers included.</p>
+      <div class="ei-options">
+        <span>V60</span><span>Orea V3</span><span>Origami</span><span>Kalita</span><span>Chemex</span>
+      </div>
+    </div>
+    <div class="equip-item reveal">
+      <div class="ei-num">03</div>
+      <div class="ei-cat">Kettles</div>
+      <div class="ei-title">Gooseneck Kettles</div>
+      <p class="ei-desc">Temperature-controlled, precision pour spouts. Pre-heated and held at your target temperature.</p>
+      <div class="ei-options">
+        <span>Fellow Stagg EKG</span><span>Brista Pro</span><span>Hario</span>
+      </div>
+    </div>
+    <div class="equip-item reveal">
+      <div class="ei-num">04</div>
+      <div class="ei-cat">Scales</div>
+      <div class="ei-title">Precision Scales</div>
+      <p class="ei-desc">0.1g resolution with integrated timers. Every gram of coffee, every ml of water — tracked.</p>
+      <div class="ei-options">
+        <span>Acaia Pearl</span><span>Timemore</span><span>Brewista</span>
+      </div>
+    </div>
+    <div class="equip-item reveal">
+      <div class="ei-num">05</div>
+      <div class="ei-cat">Consumables</div>
+      <div class="ei-title">Filter Papers</div>
+      <p class="ei-desc">Matched to your dripper. Bleached and natural options — all provided, never an afterthought.</p>
+      <div class="ei-options">
+        <span>Hario Tabless</span><span>Orea Arch</span><span>Origami Cone</span>
+      </div>
+    </div>
+    <div class="equip-item reveal">
+      <div class="ei-num">06</div>
+      <div class="ei-cat">Beans</div>
+      <div class="ei-title">Shop Beans</div>
+      <p class="ei-desc">Our selection rotates seasonally — small-batch Australian roasters, naturally and washed processed.</p>
+      <div class="ei-options">
+        <span>Single Origin</span><span>Seasonal</span><span>Natural / Washed</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing">
+  <div class="pricing-header reveal">
+    <div class="section-label" style="justify-content:center; margin-bottom:16px">
+      <span style="display:block; width:24px; height:1px; background:var(--gold)"></span>
+      Pricing
+    </div>
+    <h2 class="pricing-title">Simple, <em>honest</em> pricing</h2>
+    <p class="pricing-sub">One station, 15–20 minutes, everything you need. Choose your tier based on your beans.</p>
+  </div>
+
+  <div class="pricing-cards">
+    <div class="p-card reveal">
+      <div class="p-card-label">Bring your own beans</div>
+      <div class="p-price">
+        <span class="sym">$</span>
+        <span class="num">3</span>
+      </div>
+      <div class="p-period">Per 15–20 minute session</div>
+      <div class="p-name">BYOB Operator</div>
+      <ul class="p-features">
+        <li>Full access to all drippers, kettles &amp; scales</li>
+        <li>Barista-assisted grind on your chosen grinder</li>
+        <li>All filter papers included</li>
+        <li>Bring any beans — whole bean only</li>
+        <li>15–20 minute station time</li>
+      </ul>
+      <a href="#" class="p-cta">Start here</a>
+    </div>
+
+    <div class="p-card dark reveal">
+      <div class="p-card-label">Using our beans</div>
+      <div class="p-price">
+        <span class="sym">$</span>
+        <span class="num">10</span>
+      </div>
+      <div class="p-period">Includes one precision-dosed serve</div>
+      <div class="p-name">Full Kit Access</div>
+      <ul class="p-features">
+        <li>Everything in BYOB, plus —</li>
+        <li>One dose of our seasonal single origin</li>
+        <li>Barista briefs you on that bean's character</li>
+        <li>15–20 minute station time</li>
+      </ul>
+      <a href="#" class="p-cta">Book a session</a>
+      <div class="p-addon">
+        <div class="p-addon-label">Or just add beans to your session</div>
+        <div class="p-addon-price">+$3 <span style="font-size:1rem; color:rgba(255,255,255,0.3); font-family:'Courier New', Courier, monospace; font-weight:400;">/ dose</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GALLERY -->
+<section id="gallery">
+  <div class="gallery-header reveal">
+    <div>
+      <div class="section-label">The space</div>
+      <h2 class="gallery-title">Where you'll<br><em>brew</em></h2>
+    </div>
+    <a href="#" class="gallery-link">See more</a>
+  </div>
+  <div class="gallery-mosaic">
+    <div class="gm-item reveal">
+      <img src="https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=900&q=85" alt="Coffee shop interior">
+      <div class="gm-caption">Main brew station</div>
+    </div>
+    <div class="gm-item reveal">
+      <img src="https://images.unsplash.com/photo-1442512595331-e89e73853f31?w=600&q=85" alt="Pour over filter coffee">
+      <div class="gm-caption">The pour</div>
+    </div>
+    <div class="gm-item reveal">
+      <img src="https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=600&q=85" alt="Coffee beans">
+      <div class="gm-caption">Seasonal single origin</div>
+    </div>
+    <div class="gm-item reveal">
+      <img src="https://images.unsplash.com/photo-1498804103079-a6351b050096?w=600&q=85" alt="Coffee brewing">
+      <div class="gm-caption">Precision kettle pour</div>
+    </div>
+    <div class="gm-item reveal">
+      <img src="https://images.unsplash.com/photo-1511537190424-bbbab87ac5eb?w=600&q=85" alt="Coffee cup">
+      <div class="gm-caption">The result</div>
+    </div>
+  </div>
+</section>
+
+<!-- INFO -->
+<section id="info">
+  <div class="info-aside reveal">
+    <div class="section-label">Good to know</div>
+    <h2 class="info-aside-title">The <em>details</em><br>that matter</h2>
+    <p>Every session is designed to give you focus and control. Here's everything you need before you arrive.</p>
+  </div>
+
+  <div class="info-blocks">
+    <div class="reveal">
+      <div class="ib-title">Station rules</div>
+      <ul class="ib-list">
+        <li>Sessions are 15–20 minutes per person</li>
+        <li>One station per party at a time</li>
+        <li>Barista assists with grind — not the brew</li>
+        <li>Clean your station after your session</li>
+        <li>No outside food or drinks at the brew station</li>
+        <li>Under-18s welcome with a guardian</li>
+      </ul>
+    </div>
+    <div class="reveal">
+      <div class="ib-title">Your beans</div>
+      <ul class="ib-list">
+        <li>Any roast profile, any origin — your call</li>
+        <li>We grind fresh per session, never pre-ground</li>
+        <li>Whole beans only — no pre-ground please</li>
+        <li>Minimum ~18g per session recommended</li>
+        <li>Store-bought or specialty — both welcome</li>
+      </ul>
+    </div>
+    <div class="reveal">
+      <div class="ib-title">Our beans</div>
+      <ul class="ib-list">
+        <li>Rotating from Australian specialty roasters</li>
+        <li>All listed with roast date and tasting notes</li>
+        <li>Natural, washed, and experimental options</li>
+        <li>Barista will walk you through each bean</li>
+        <li>Buy a full retail bag to take home</li>
+      </ul>
+    </div>
+    <div class="reveal">
+      <div class="ib-title">Equipment notes</div>
+      <ul class="ib-list">
+        <li>All equipment cleaned between sessions</li>
+        <li>Do not adjust grinder settings yourself</li>
+        <li>Filter papers are provided and single-use</li>
+        <li>Tell the barista your target water temperature</li>
+        <li>Scales are calibrated daily</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <a href="#" class="footer-logo">Drip Lab</a>
+  <div class="footer-center">
+    Self-serve filter coffee<br>Sydney, Australia
+  </div>
+  <div class="footer-links">
+    <a href="#">Instagram</a>
+    <a href="#">Book</a>
+    <a href="#">Contact</a>
+  </div>
+</footer>
+
+<script>
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        // stagger siblings slightly
+        const siblings = Array.from(e.target.parentElement.querySelectorAll('.reveal'));
+        const idx = siblings.indexOf(e.target);
+        setTimeout(() => {
+          e.target.classList.add('visible');
+        }, idx * 80);
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.08 });
+
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+</script>
+</body>
+</html>
