@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>OFFSET x D — DRIP LAB</title>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 
 <style>
   :root {
@@ -328,13 +329,14 @@
   .equip-item:hover .ei-cat,
   .equip-item:hover .ei-title { color: var(--cream); }
   .equip-item:hover .ei-options span { color: rgba(255,255,255,0.82); }
-  .equip-item:hover .ei-options span::before { background: rgba(255,255,255,0.4); }
+  .equip-item:hover .ei-options span::before { opacity: 0.5; }
   .equip-item:hover .ei-num { color: rgba(255,255,255,0.1); }
 
   .ei-num {
-    font-size: 2.4rem;
-    font-weight: 700;
-    color: rgba(26,23,20,0.18);
+    font-size: 2.6rem;
+    font-weight: 300;
+    color: var(--ink);
+    letter-spacing: -0.02em;
     line-height: 1;
     margin-bottom: 12px;
     transition: color 0.25s;
@@ -372,14 +374,14 @@
   }
 
   .ei-options span::before {
-    content: '';
+    content: '☕';
     position: absolute;
     left: 0;
-    top: 9px;
-    width: 5px;
-    height: 1px;
-    background: var(--gold-light);
-    transition: background 0.25s;
+    top: 0;
+    font-size: 0.68rem;
+    line-height: 1.6;
+    background: none;
+    transition: none;
   }
 
   /* ── PRICING ── */
@@ -471,13 +473,28 @@
   .booking-title em { font-style: italic; color: var(--gold); }
 
   .booking-subtitle {
-    font-size: 0.72rem;
-    color: var(--ink);
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    margin-top: 10px;
-    font-weight: 700;
+    font-size: 0.82rem;
+    color: var(--ink-faint);
+    line-height: 1.65;
+    margin-top: 8px;
   }
+
+  .cal-hint {
+    font-size: 0.72rem;
+    color: var(--ink-faint);
+    letter-spacing: 0.06em;
+    margin-bottom: 12px;
+  }
+
+  .time-scroll {
+    max-height: 180px;
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+
+  .time-scroll::-webkit-scrollbar { width: 3px; }
+  .time-scroll::-webkit-scrollbar-track { background: transparent; }
+  .time-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 
   .booking-body {
     max-width: 760px;
@@ -571,9 +588,9 @@
   .cal-day.active { background: var(--ink) !important; color: var(--cream) !important; border-color: var(--ink) !important; }
 
   .time-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 7px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
   }
 
   .time-btn {
@@ -688,7 +705,7 @@
     font-weight: 700;
     font-size: 1.9rem;
     line-height: 1.15;
-    margin-bottom: 16px;
+    margin-bottom: 0;
   }
 
   .info-aside-title em { font-style: italic; color: var(--gold); }
@@ -718,25 +735,25 @@
     list-style: none;
     display: flex;
     flex-direction: column;
-    gap: 9px;
+    gap: 10px;
+    max-width: 520px;
   }
 
   .ib-list li {
     font-size: 0.82rem;
     line-height: 1.6;
     color: var(--ink);
-    padding-left: 14px;
+    padding-left: 22px;
     position: relative;
   }
 
   .ib-list li::before {
-    content: '';
+    content: '☕';
     position: absolute;
     left: 0;
-    top: 9px;
-    width: 5px;
-    height: 1px;
-    background: var(--gold-light);
+    top: 0;
+    font-size: 0.72rem;
+    line-height: 1.6;
   }
 
   /* ── FOOTER ── */
@@ -783,6 +800,92 @@
   }
 
   .footer-links a:hover { color: var(--gold-light); }
+
+  /* ── ADMIN PANEL ── */
+  #admin-panel {
+    display: none;
+    background: var(--cream);
+    padding: 48px 32px;
+    border-top: 2px solid var(--gold);
+  }
+
+  #admin-panel.visible { display: block; }
+
+  .admin-title {
+    font-size: 0.62rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 24px;
+  }
+
+  .admin-cal-wrap {
+    max-width: 520px;
+    margin-bottom: 28px;
+  }
+
+  .admin-slots {
+    max-width: 520px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .admin-slot-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    font-size: 0.82rem;
+  }
+
+  .admin-slot-status {
+    font-size: 0.65rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .admin-slot-status.open   { color: var(--gold); }
+  .admin-slot-status.booked { color: var(--ink-faint); }
+  .admin-slot-status.blocked { color: #c0392b; }
+
+  .admin-toggle {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border: 1px solid var(--border);
+    background: none;
+    cursor: pointer;
+    color: var(--ink);
+    transition: background 0.2s;
+  }
+
+  .admin-toggle:hover { background: var(--cream-dark); }
+  .admin-toggle.unblock { border-color: #c0392b; color: #c0392b; }
+  .admin-toggle.unblock:hover { background: #fdecea; }
+
+  .admin-day-label {
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
+    color: var(--ink-faint);
+    margin-bottom: 14px;
+  }
+
+  .admin-logout {
+    margin-top: 28px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    background: none;
+    border: 1px solid var(--border);
+    padding: 8px 18px;
+    cursor: pointer;
+    color: var(--ink-faint);
+  }
 
   /* ── REVEAL ── */
   .reveal {
@@ -838,7 +941,7 @@
   /* ── TABLET ── */
   @media (max-width: 900px) {
     .equip-grid { grid-template-columns: 1fr 1fr; }
-    #info { grid-template-columns: 1fr; gap: 32px; }
+    #info { grid-template-columns: 1fr; gap: 20px; }
     .info-aside { position: static; }
     .pricing-cards { grid-template-columns: 1fr; max-width: 420px; }
   }
@@ -906,7 +1009,7 @@
     .equip-title { font-size: clamp(1.5rem, 7vw, 2rem); }
     .equip-grid { grid-template-columns: 1fr 1fr; gap: 8px; padding: 0; }
     .equip-item { padding: 20px 16px; }
-    .ei-num { font-size: 1.8rem; margin-bottom: 8px; }
+    .ei-num { font-size: 2.2rem; margin-bottom: 8px; }
     .ei-title { font-size: 0.95rem; margin-bottom: 10px; }
 
     /* Pricing */
@@ -925,15 +1028,15 @@
     .booking-title { font-size: clamp(1.5rem, 7vw, 2rem); }
     .cal-day { font-size: 0.72rem; }
     .cal-day-header { font-size: 0.5rem; }
-    .time-grid { grid-template-columns: repeat(3, 1fr); gap: 5px; }
+    .time-grid { gap: 4px; }
     .time-btn { padding: 11px 4px; font-size: 0.72rem; }
     .booking-form { grid-template-columns: 1fr; }
     .booking-confirm { padding: 32px 16px; }
 
     /* Info */
-    #info { padding: 40px 16px; gap: 28px; }
+    #info { padding: 40px 16px; gap: 16px; }
     .info-aside-title { font-size: 1.6rem; }
-    .info-blocks { grid-template-columns: 1fr; gap: 24px; }
+
 
     /* Footer */
     footer {
@@ -1040,8 +1143,8 @@
 <!-- EQUIPMENT -->
 <section id="equipment">
   <div class="equip-intro reveal">
-    <div class="section-label">What Gear do We Have</div>
-    <h2 class="equip-title">Pro Gear <em>All</em> Included</h2>
+    <div class="section-label">Gear Overview</div>
+    <h2 class="equip-title">Our <em>Gear</em></h2>
   </div>
   <div class="equip-grid">
     <div class="equip-item reveal">
@@ -1064,12 +1167,6 @@
     </div>
     <div class="equip-item reveal">
       <div class="ei-num">04</div>
-      <div class="ei-cat">Scale</div>
-      <div class="ei-title">Precision Scale</div>
-      <div class="ei-options"><span>Professional Coffee Scale</span></div>
-    </div>
-    <div class="equip-item reveal">
-      <div class="ei-num">05</div>
       <div class="ei-cat">Beans</div>
       <div class="ei-title">Coffee Beans</div>
       <div class="ei-options"><span>BYO</span><span>Danes</span><span>Infinity</span></div>
@@ -1107,6 +1204,7 @@
   <div class="booking-body">
     <div class="booking-step" id="bstep-day">
       <div class="booking-step-label">01 &nbsp;/ &nbsp;Choose a day</div>
+      <p class="cal-hint">Tap an open date — grey days are unavailable.</p>
       <div class="cal-nav">
         <button class="cal-nav-btn" id="cal-prev">← Prev</button>
         <span class="cal-month-label" id="cal-month-label"></span>
@@ -1116,13 +1214,16 @@
     </div>
     <div class="booking-step locked" id="bstep-time">
       <div class="booking-step-label">02 &nbsp;/ &nbsp;Choose a time</div>
-      <div class="time-grid" id="time-grid"></div>
+      <p class="cal-hint">Scroll to see all slots. Strikethrough = taken.</p>
+      <div class="time-scroll">
+        <div class="time-grid" id="time-grid"></div>
+      </div>
     </div>
     <div class="booking-step locked" id="bstep-details">
       <div class="booking-step-label">03 &nbsp;/ &nbsp;Your details</div>
       <form class="booking-form" id="booking-form" novalidate>
         <input class="booking-input" id="b-name" type="text" placeholder="Your name" autocomplete="name">
-        <input class="booking-input" id="b-phone" type="tel" placeholder="Mobile number" autocomplete="tel">
+        <input class="booking-input" id="b-email" type="email" placeholder="Email for confirmation" autocomplete="email">
         <button class="booking-submit" type="submit">Confirm &amp; book</button>
       </form>
     </div>
@@ -1130,7 +1231,7 @@
       <div class="booking-confirm-check">Booking confirmed</div>
       <h3 class="booking-confirm-title">You're all set</h3>
       <div class="booking-confirm-detail" id="booking-confirm-detail"></div>
-      <div class="booking-confirm-sms">A confirmation text has been sent to your number</div>
+      <div class="booking-confirm-sms">A confirmation email has been sent to your inbox</div>
     </div>
   </div>
 </section>
@@ -1139,43 +1240,14 @@
 <section id="info">
   <div class="info-aside reveal">
     <div class="section-label">Good to know</div>
-    <h2 class="info-aside-title">The <em>details</em><br>that matter</h2>
-    <p>Everything you need to know before you arrive.</p>
+    <h2 class="info-aside-title">The <em>details</em> that matter</h2>
   </div>
-  <div class="info-blocks">
-    <div class="reveal">
-      <div class="ib-title">Station rules</div>
-      <ul class="ib-list">
-        <li>15–20 minutes per person</li>
-        <li>One station per party — bring a friend, same price</li>
-        <li>Barista assists with grind — ask questions freely</li>
-        <li>Clean your station after your session</li>
-      </ul>
-    </div>
-    <div class="reveal">
-      <div class="ib-title">Your beans</div>
-      <ul class="ib-list">
-        <li>Whole bean only, 15g+ recommended</li>
-        <li>Tell us your brew method — we suggest the grind</li>
-      </ul>
-    </div>
-    <div class="reveal">
-      <div class="ib-title">Our beans</div>
-      <ul class="ib-list">
-        <li>Danes — Australian Specialty Coffee</li>
-        <li>Fresh, sourced directly from roasters</li>
-        <li>Barista will walk you through each bean</li>
-      </ul>
-    </div>
-    <div class="reveal">
-      <div class="ib-title">Equipment</div>
-      <ul class="ib-list">
-        <li>All gear provided, cleaned between sessions</li>
-        <li>We set the grinder — ask for adjustments anytime</li>
-        <li>Tell us your water temp — we pre-heat before you arrive</li>
-      </ul>
-    </div>
-  </div>
+  <ul class="ib-list reveal">
+    <li>No matter 1 person or a football team, same price. Bring friends along!</li>
+    <li>Our friendly barista are happy to help on any questions of your brew.</li>
+    <li>All gears are provided, just bring along with your beans and friends.</li>
+    <li>We will pre-heat water for you at 92°C as default. Let us know otherwise!</li>
+  </ul>
 </section>
 
 <!-- FOOTER -->
@@ -1191,6 +1263,22 @@
     <a href="#">Contact</a>
   </div>
 </footer>
+
+<!-- ADMIN PANEL -->
+<div id="admin-panel">
+  <div class="admin-title">— Admin · Slot Manager</div>
+  <div class="admin-cal-wrap">
+    <div class="cal-nav" id="admin-cal-nav">
+      <button class="cal-nav-btn" id="admin-prev">← Prev</button>
+      <span class="cal-month-label" id="admin-month-label"></span>
+      <button class="cal-nav-btn" id="admin-next">Next →</button>
+    </div>
+    <div class="cal-grid" id="admin-cal-grid"></div>
+  </div>
+  <div class="admin-day-label" id="admin-day-label">Select a day above to manage slots</div>
+  <div class="admin-slots" id="admin-slots"></div>
+  <button class="admin-logout" id="admin-logout">Log out</button>
+</div>
 
 <script>
   const io = new IntersectionObserver((entries) => {
@@ -1252,7 +1340,10 @@
     calMonth = today.getMonth();
 
     function dateKey(d) { return d.getFullYear() + '-' + (d.getMonth()+1) + '-' + d.getDate(); }
-    function isSlotTaken(dk, time) { return localStorage.getItem('drip_' + dk + '_' + time) === '1'; }
+    function isSlotTaken(dk, time) {
+      return localStorage.getItem('drip_' + dk + '_' + time) === '1' ||
+             localStorage.getItem('drip_block_' + dk + '_' + time) === '1';
+    }
     function markSlotTaken(dk, time) { localStorage.setItem('drip_' + dk + '_' + time, '1'); }
     // Open: Mon(1), Tue(2), Thu(4), Fri(5) — closed Wed(3), weekends
     function isOpenDay(dow) { return dow === 1 || dow === 2 || dow === 4 || dow === 5; }
@@ -1348,30 +1439,176 @@
       });
     }
 
+    // ── EMAILJS SETUP ──────────────────────────────────────────────
+    // 1. Sign up at https://www.emailjs.com (free — 200 emails/month)
+    // 2. Add an Email Service (Gmail recommended) → copy the Service ID
+    // 3. Create two Email Templates:
+    //      "owner_notify"   → sends to your inbox, vars: {{name}} {{phone}} {{email}} {{day}} {{time}}
+    //      "customer_confirm" → sends to {{customer_email}}, vars: {{name}} {{day}} {{time}}
+    // 4. Go to Account → Public Key and paste it below
+    var EMAILJS_PUBLIC_KEY   = 'utDLhPXCWlfO5_VxK';
+    var EMAILJS_SERVICE_ID   = 'service_ea4xo59';
+    var OWNER_TEMPLATE_ID    = 'template_r0uaivi';
+    var CUSTOMER_TEMPLATE_ID = 'template_nnjiwpr';
+    var OWNER_EMAIL          = 'markhwsiu@gmail.com';
+
+    emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+
     document.getElementById('booking-form').addEventListener('submit', function (e) {
       e.preventDefault();
-      var name = document.getElementById('b-name').value.trim();
-      var phone = document.getElementById('b-phone').value.trim();
-      if (!name || !phone || !selectedDay || !selectedTime) return;
+      var name  = document.getElementById('b-name').value.trim();
+      var email = document.getElementById('b-email').value.trim();
+      if (!name || !email || !selectedDay || !selectedTime) return;
 
-      markSlotTaken(selectedDay, selectedTime);
+      var btn = this.querySelector('.booking-submit');
+      btn.textContent = 'Sending…';
+      btn.disabled = true;
 
-      var SMS_URL = '';
-      if (SMS_URL) {
-        fetch(SMS_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name: name, phone: phone, day: selectedDayLabel, time: selectedTime })
-        }).catch(function () {});
-      }
+      var params = {
+        name: name,
+        email: email,
+        day: selectedDayLabel,
+        time: selectedTime,
+        to_email: OWNER_EMAIL,
+        customer_email: email
+      };
 
-      document.getElementById('booking-confirm-detail').innerHTML =
-        name + '&nbsp;&nbsp;·&nbsp;&nbsp;' + selectedDayLabel + '&nbsp;&nbsp;·&nbsp;&nbsp;' + selectedTime + '<br>' + phone;
-      document.getElementById('bstep-day').style.display = 'none';
-      document.getElementById('bstep-time').style.display = 'none';
-      document.getElementById('bstep-details').style.display = 'none';
-      document.getElementById('booking-confirm').style.display = 'block';
+      Promise.all([
+        emailjs.send(EMAILJS_SERVICE_ID, OWNER_TEMPLATE_ID, params),
+        emailjs.send(EMAILJS_SERVICE_ID, CUSTOMER_TEMPLATE_ID, params)
+      ]).then(function () {
+        markSlotTaken(selectedDay, selectedTime);
+        document.getElementById('booking-confirm-detail').innerHTML =
+          name + '&nbsp;&nbsp;·&nbsp;&nbsp;' + selectedDayLabel + '&nbsp;&nbsp;·&nbsp;&nbsp;' + selectedTime + '<br>' + email;
+        document.getElementById('bstep-day').style.display = 'none';
+        document.getElementById('bstep-time').style.display = 'none';
+        document.getElementById('bstep-details').style.display = 'none';
+        document.getElementById('booking-confirm').style.display = 'block';
+      }).catch(function () {
+        btn.textContent = 'Confirm & book';
+        btn.disabled = false;
+        alert('Could not send confirmation. Please try again or contact us directly.');
+      });
     });
+  })();
+
+  // ── ADMIN PANEL ──
+  (function () {
+    var ADMIN_PASSWORD = 'drip2025';
+    var SLOTS = ['10:00am','10:15am','10:30am','10:45am','11:00am','11:15am','11:30am','11:45am','12:00pm','12:15pm','12:30pm','12:45pm','1:00pm','1:15pm','1:30pm'];
+    var MONTHS_FULL = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    var DAY_HEADS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    var DAY_SHORT = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    var MONTHS_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+    var adminYear, adminMonth, adminSelectedKey = null, adminSelectedLabel = null;
+    var today = new Date(); today.setHours(0,0,0,0);
+
+    function dateKey(d) { return d.getFullYear() + '-' + (d.getMonth()+1) + '-' + d.getDate(); }
+    function isOpenDay(dow) { return dow === 1 || dow === 2 || dow === 4 || dow === 5; }
+    function isBooked(dk, t)  { return localStorage.getItem('drip_' + dk + '_' + t) === '1'; }
+    function isBlocked(dk, t) { return localStorage.getItem('drip_block_' + dk + '_' + t) === '1'; }
+    function setBlocked(dk, t, val) {
+      if (val) localStorage.setItem('drip_block_' + dk + '_' + t, '1');
+      else localStorage.removeItem('drip_block_' + dk + '_' + t);
+    }
+
+    function buildAdminCal() {
+      document.getElementById('admin-month-label').textContent = MONTHS_FULL[adminMonth] + ' ' + adminYear;
+      var grid = document.getElementById('admin-cal-grid');
+      grid.innerHTML = '';
+      DAY_HEADS.forEach(function (h) {
+        var hd = document.createElement('div');
+        hd.className = 'cal-day-header'; hd.textContent = h; grid.appendChild(hd);
+      });
+      var first = new Date(adminYear, adminMonth, 1);
+      var start = new Date(first); start.setDate(1 - first.getDay());
+      for (var i = 0; i < 42; i++) {
+        var d = new Date(start); d.setDate(start.getDate() + i);
+        var cell = document.createElement('div');
+        cell.className = 'cal-day';
+        cell.textContent = d.getDate();
+        var dk = dateKey(d);
+        if (d.getMonth() !== adminMonth) cell.classList.add('other-month');
+        else if (d < today || !isOpenDay(d.getDay())) cell.classList.add('unavailable');
+        else { cell.classList.add('available'); cell.style.cursor = 'pointer'; }
+        if (dk === adminSelectedKey) cell.classList.add('active');
+        cell.addEventListener('click', function (dk, d) { return function () {
+          if (!isOpenDay(d.getDay()) || d < today) return;
+          adminSelectedKey = dk;
+          adminSelectedLabel = DAY_SHORT[d.getDay()] + ' ' + d.getDate() + ' ' + MONTHS_SHORT[d.getMonth()];
+          buildAdminCal();
+          renderSlots();
+        }; }(dk, new Date(d)));
+        grid.appendChild(cell);
+      }
+    }
+
+    function renderSlots() {
+      var label = document.getElementById('admin-day-label');
+      var wrap  = document.getElementById('admin-slots');
+      if (!adminSelectedKey) { label.textContent = 'Select a day above to manage slots'; wrap.innerHTML = ''; return; }
+      label.textContent = adminSelectedLabel;
+      wrap.innerHTML = '';
+      SLOTS.forEach(function (slot) {
+        var booked  = isBooked(adminSelectedKey, slot);
+        var blocked = isBlocked(adminSelectedKey, slot);
+        var row = document.createElement('div');
+        row.className = 'admin-slot-row';
+        var statusText = booked ? 'Booked' : blocked ? 'Blocked' : 'Open';
+        var statusClass = booked ? 'booked' : blocked ? 'blocked' : 'open';
+        row.innerHTML = '<span>' + slot + '</span><span class="admin-slot-status ' + statusClass + '">' + statusText + '</span>';
+        if (!booked) {
+          var btn = document.createElement('button');
+          btn.className = 'admin-toggle' + (blocked ? ' unblock' : '');
+          btn.textContent = blocked ? 'Unblock' : 'Block';
+          btn.addEventListener('click', function (s, isBlk) { return function () {
+            setBlocked(adminSelectedKey, s, !isBlk);
+            renderSlots();
+          }; }(slot, blocked));
+          row.appendChild(btn);
+        }
+        wrap.appendChild(row);
+      });
+    }
+
+    function initAdmin() {
+      adminYear  = today.getFullYear();
+      adminMonth = today.getMonth();
+      buildAdminCal();
+      document.getElementById('admin-prev').addEventListener('click', function () {
+        adminMonth--; if (adminMonth < 0) { adminMonth = 11; adminYear--; } buildAdminCal();
+      });
+      document.getElementById('admin-next').addEventListener('click', function () {
+        adminMonth++; if (adminMonth > 11) { adminMonth = 0; adminYear++; } buildAdminCal();
+      });
+      document.getElementById('admin-logout').addEventListener('click', function () {
+        sessionStorage.removeItem('drip_admin');
+        document.getElementById('admin-panel').classList.remove('visible');
+      });
+    }
+
+    function checkAdmin() {
+      if (window.location.hash === '#admin') {
+        if (sessionStorage.getItem('drip_admin') === '1') {
+          document.getElementById('admin-panel').classList.add('visible');
+          initAdmin();
+        } else {
+          var pw = prompt('Admin password:');
+          if (pw === ADMIN_PASSWORD) {
+            sessionStorage.setItem('drip_admin', '1');
+            document.getElementById('admin-panel').classList.add('visible');
+            initAdmin();
+          } else if (pw !== null) {
+            alert('Incorrect password.');
+            window.location.hash = '';
+          }
+        }
+      }
+    }
+
+    checkAdmin();
+    window.addEventListener('hashchange', checkAdmin);
   })();
 </script>
 </body>
