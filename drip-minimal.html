@@ -1558,16 +1558,25 @@
         var statusText = booked ? 'Booked' : blocked ? 'Blocked' : 'Open';
         var statusClass = booked ? 'booked' : blocked ? 'blocked' : 'open';
         row.innerHTML = '<span>' + slot + '</span><span class="admin-slot-status ' + statusClass + '">' + statusText + '</span>';
-        if (!booked) {
-          var btn = document.createElement('button');
+        var btn = document.createElement('button');
+        if (booked) {
+          btn.className = 'admin-toggle unblock';
+          btn.textContent = 'Unbook';
+          btn.addEventListener('click', function (s) { return function () {
+            if (confirm('Release this slot? The customer will NOT be notified automatically.')) {
+              localStorage.removeItem('drip_' + adminSelectedKey + '_' + s);
+              renderSlots();
+            }
+          }; }(slot));
+        } else {
           btn.className = 'admin-toggle' + (blocked ? ' unblock' : '');
           btn.textContent = blocked ? 'Unblock' : 'Block';
           btn.addEventListener('click', function (s, isBlk) { return function () {
             setBlocked(adminSelectedKey, s, !isBlk);
             renderSlots();
           }; }(slot, blocked));
-          row.appendChild(btn);
         }
+        row.appendChild(btn);
         wrap.appendChild(row);
       });
     }
